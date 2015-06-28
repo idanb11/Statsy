@@ -1,0 +1,14 @@
+{
+  "name": "Splunktiv8",
+  "version": "0.0.0",
+  "homepage": "https://github.com/idanb11/Splunktiv8",
+  "authors": [
+    "idanb11 <idanb11@gmail.com>"
+  ],
+  "license": "proprietary",
+  "dependencies": {
+    "splunk-sdk-javascript": "https://github.com/splunk/splunk-sdk-javascript.git#~1.7.1",
+    "bootstrap": "~3.3.5",
+    "angularjs": "1.3"
+  }
+}
