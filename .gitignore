@@ -1,4 +1,6 @@
-.idea/
 node_modules/
 bower_components/
-*.map
+.sass-cache/
+.idea/
+.tmp/
+dist/
