@@ -1,7 +1,9 @@
 {
   "name": "splunktiv8",
   "version": "0.0.0",
-  "dependencies": {},
+  "dependencies": {
+    "splunk-sdk": "^1.7.1"
+  },
   "scripts": {
     "test": "gulp test"
   },
