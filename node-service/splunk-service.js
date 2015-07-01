@@ -13,17 +13,35 @@ var service = new splunkjs.Service({
   version : "default"
 });
 
-service.login(function(err, success) {
-  if (err) {
-    console.log(err);
-    throw err;
-  }
-  console.log("Login was successful: " + success);
-  service.jobs().fetch(function(err, jobs) {
-    var list = jobs.list();
-    for (var i = 0; i < list.length; i++) {
-      console.log("Job " + i + ": " + list[i].sid);
+exports.runSearch = function(queryString, errorFn, returnData) {
+  splunkjs.Async.chain([
+
+      function(done) { // First, we log in
+        service.login(done);
+      },
+      function(success, done) { // Perform the search
+        if (!success) {
+          done("Error logging in");
+        }
+
+        service.oneshotSearch(queryString, {}, done);
+      },
+      // The job is done, and the results are returned
+      function(results, done) {
+        done(null, results);
+      }
+    ],
+    function(err, results) {
+      if (err) {
+        errorFn('500', err);
+        return;
+      }
+
+      console.log("DONE");
+      returnData(results.rows);
     }
-  });
-});
+  );
+};
+
+
 

@@ -3,7 +3,8 @@
  */
 
 var express = require('express'),
-  app = module.exports = express();
+  app = module.exports = express(),
+  splunkService = require('./node-service/splunk-service');
 
 // create an error with .status. we can then use the property in our
 // custom error handler (Connect respects this prop as well)
@@ -20,66 +21,23 @@ function error(status, msg) {
 app.use('/api', function(req, res, next) {
   var key = req.query['api-key'];
 
-  console.log(req.query);
-
-  // key isn't present
+  /*// key isn't present
   if (!key) return next(error(400, 'api key required'));
 
   // key is invalid
-  if (!~apiKeys.indexOf(key)) return next(error(401, 'invalid api key'));
+  if (!~apiKeys.indexOf(key)) return next(error(401, 'invalid api key'));*/
 
   // all good, store req.key for route access
   req.key = key;
   next();
 });
 
-// map of valid api keys, typically mapped to
-// account info with some sort of database like redis.
-// api keys do _not_ serve as authentication, merely to
-// track API usage or help prevent malicious behavior etc.
-
-var apiKeys = ['foo', 'bar', 'baz'];
-
-// these two objects will serve as our faux database
-
-var repos = [
-  {
-    name: 'express',
-    url : 'http://github.com/strongloop/express'
-  }
-  , {
-    name: 'stylus',
-    url : 'http://github.com/learnboost/stylus'
-  }
-  , {
-    name: 'cluster',
-    url : 'http://github.com/learnboost/cluster'
-  }
-];
-
-var users = [
-  {name: 'tobi'}
-  , {name: 'loki'}
-  , {name: 'jane'}
-];
-
-var userRepos = {
-  tobi: [repos[0], repos[1]]
-  ,
-  loki: [repos[1]]
-  ,
-  jane: [repos[2]]
-};
-
 // we now can assume the api key is valid,
 // and simply expose the data
-
-app.get('/api/users', function(req, res, next) {
-  res.send(users);
-});
-
-app.get('/api/repos', function(req, res, next) {
-  res.send(repos);
+app.get('/api/search', function(req, res, next) {
+  splunkService.runSearch("search * | head 3", error, function(data) {
+    res.send(data);
+  });
 });
 
 app.get('/api/user/:name/repos', function(req, res, next) {
